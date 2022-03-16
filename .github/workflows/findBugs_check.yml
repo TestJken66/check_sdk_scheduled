@@ -63,6 +63,7 @@ jobs:
           ### export PATH
           export PATH=$PATH:$(pwd)/findbugs-3.0.1/bin/
 
+          ./gradlew build || true
           bash ./replace.sh || true
           ./gradlew build || true
           cp ./dev-sdk/build/outputs/aar/dev-sdk-debug.aar ./
