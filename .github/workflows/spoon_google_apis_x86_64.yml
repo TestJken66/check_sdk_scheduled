@@ -67,6 +67,7 @@ jobs:
           ls
           ./replace.sh
           rm -rf  dev-sdk/src/main/java/com/analysys/plugin
+          rm -rf dev-sdk/src/androidTest/java/com/analysys/plugin/
           ./gradlew build || true
           echo "=================编译完成查看目录============="
           pwd
