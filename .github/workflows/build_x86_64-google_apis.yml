@@ -66,6 +66,8 @@ jobs:
         run: |
           cd analysys-dev-sdk
           rm -rf  dev-sdk/src/main/java/com/analysys/plugin
+          rm -rf dev-sdk/src/androidTest/java/com/analysys/plugin/
+          rm -rf dev-sdk/src/androidTest/java/com/miqt/ 
           ./replace.sh
           echo "=====================查看当前目录====================="
           ls
