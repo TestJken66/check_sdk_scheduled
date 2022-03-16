@@ -1,4 +1,4 @@
-name: findBugs_check
+name: lint
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macOS-11
     if: "!startsWith(github.event.head_commit.message, 'GitHubAction:')"
 
     steps:
@@ -53,27 +53,21 @@ jobs:
           chmod -R 777 *
           git config core.filemode false
 
-      - name: findBugs_check
+      - name: lint
         shell: bash
         continue-on-error: true
         run: |
           cd analysys-dev-sdk
-          wget https://nchc.dl.sourceforge.net/project/findbugs/findbugs/3.0.1/findbugs-3.0.1.tar.gz
-          tar zxvf findbugs-3.0.1.tar.gz
-          ### export PATH
-          export PATH=$PATH:$(pwd)/findbugs-3.0.1/bin/
-
           rm -rf  dev-sdk/src/main/java/com/analysys/plugin
-          bash ./replace.sh || true
+          bash ./replace.sh ||true
           ./gradlew build || true
-          cp ./dev-sdk/build/outputs/aar/dev-sdk-debug.aar ./
-          unzip dev-sdk-debug.aar
-          findbugs -html ./classes.jar>./findbugs_result.html
+          ./gradlew lint || true
+          #ls -R dev-sdk/build/>./lint_tree.txt
           echo "${{github.repository_owner}} will upload files"
           #######################################################################################################
-          ####################################### upload files ################################################
+          ######################################## upload files #################################################
           #######################################################################################################
-          file_name=findbugs_result.html
+          file_name=dev-sdk/build/reports/lint-results.html
           wget  https://github.com/hhhaiai/uploadGithub/releases/download/v1.1/uploadGithubService-1.1-jar-with-dependencies.jar
           dat=$(date "+%H%M%S")
           tpn=${{ github.repository }}
@@ -95,7 +89,7 @@ jobs:
           echo "Build commit sha: ${{ github.sha }}">>${file_name}
           echo "job.container.id: ${{ job.container.id }}">>${file_name}
           echo "job.container.network: ${{ job.container.network }}">>${file_name}
-          java -jar uploadGithubService-1.1-jar-with-dependencies.jar  -owner hhhaiai -repo Git_result -target-dir-full-name  $upload_file_name -native-file ${file_name}  -token ${{ secrets.GTOKEN }} -commit-messge  "GitHubAction:findbugs  ${{ github.repository }} Job ${{ github.job }}, created by ${{ github.workflow }} " -commit-auther "UploadGithubService" -commit-email "sanbo.xyz@gmail.com"
+          java -jar uploadGithubService-1.1-jar-with-dependencies.jar  -owner hhhaiai -repo Git_result -target-dir-full-name  $upload_file_name -native-file ${file_name}  -token ${{ secrets.GTOKEN }} -commit-messge  "GitHubAction: lint  ${{ github.repository }} Job ${{ github.job }}, created by ${{ github.workflow }} " -commit-auther "UploadGithubService" -commit-email "sanbo.xyz@gmail.com"
 
       - name: Send mail
         uses: dawidd6/action-send-mail@v3
@@ -108,14 +102,14 @@ jobs:
           server_port: 465
           username: ${{ secrets.MAILUSERNAME }}
           password: ${{ secrets.MAILPASSWORD }}
-          subject: GithubActions[ findBugs ]( ${{ github.job }} )
+          subject: GithubActions[lint]( ${{ github.job }} ) 
           to: ${{ secrets.MAIL_LIST }}
           from: github.com/hhhaiai
-          body: findBugs job ( ${{ github.job }} ) of ${{ github.repository }} completed successfully!
+          body: lint job ( ${{ github.job }} ) of ${{ github.repository }} completed successfully!
           ignore_cert: true
           priority: low
           secure: true
-          attachments: ./analysys-dev-sdk/findbugs_result.html
+          attachments: ./analysys-dev-sdk/dev-sdk/build/reports/lint-results.html
           #html_body: file://dev-sdk/build/reports/lint-results.html
           #convert_markdown: true
 

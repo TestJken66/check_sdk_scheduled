@@ -60,6 +60,7 @@ jobs:
         run: |
           cd analysys-dev-sdk
           ./replace.sh || true
+          rm -rf  dev-sdk/src/main/java/com/analysys/plugin
           echo "=====================查看变动====================="
           git status
           git diff
