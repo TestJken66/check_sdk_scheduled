@@ -50,7 +50,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          git clone https://oauth2:${{ secrets.GTOKEN }}@github.com/hhhaiai/analysys-dev-sdk.git
+          git clone https://oauth2:${{ secrets.GTOKEN }}@github.com/analysys-sdk/analysys-dev-sdk.git
           echo "===========clone over===================="
           ls
           cd analysys-dev-sdk
