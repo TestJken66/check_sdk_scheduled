@@ -146,7 +146,7 @@ jobs:
           subject: GithubActions( ${{ github.job }} ) - ${{ github.sha }}
           to: ${{ secrets.MAIL_LIST }}
           from: github.com/hhhaiai
-          body: Build job ( ${{ github.job }} ) of ${{ github.repository }} completed successfully!
+          body: veridex_check job ( ${{ github.job }} ) of ${{ github.repository }} completed successfully!
           ignore_cert: true
           priority: low
           secure: true
